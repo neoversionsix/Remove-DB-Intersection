@@ -24,7 +24,7 @@ Extension = 'csv'
 Delimiter = ','
 
 # Output file path of Result
-Output_path_Report = 'D:/TEST/data_Output.csv'
+Output_path = 'D:/TEST/data_Output.csv'
 
 Lst_Columns = ['B','C']
 
@@ -38,38 +38,39 @@ print('Created Dataframe B...')
 
 
 # Create Lists to Check for duplicates
-Lst_Row_Key = []
-print(df_A)
+Lst_Row_Key_A = []
 
 for index, row in df_A.iterrows():
     Str_Row = str('')
     for item in Lst_Columns:
         Str_Row = Str_Row + row[item]
-    Lst_Row_Key.append(Str_Row)
-print(Lst_Row_Key)
+    Lst_Row_Key_A.append(Str_Row)
+print('Example Row Key from A:', Lst_Row_Key_A[0])
 
-# Create Array of Rows from List of Rows
-Array_Raw_Items_Results = np.array(Lst_Row_Key)
+# Create Lists to Check for duplicates
+Lst_Row_Key_B = []
 
-# Create a dictionary of duplicate checker keys vs numvber of duplicates
-unique, counts = np.unique(Array_Raw_Items_Results, return_counts=True)
-Dict_Unique_Counts = dict(zip(unique, counts))
-#Create a list of keys for duplicates only
-List_Duplicate_Keys = ([key for key, val in Dict_Unique_Counts.items() if val > 1])
-# Find which Row Strings are exact duplicates and add their Index to a list
-List_Row_Index_Duplicates = []
-for key in List_Duplicate_Keys:
-    # Get the row index's of the duplicate Key
-    List_Indexes = [i for i, j in enumerate(Lst_Row_Key) if j == key]
-    # Remove Fist Duplicate from List because we let the first one load
-    List_Indexes.pop(0)
-    # Append the row index's to a list
-    List_Row_Index_Duplicates.extend(List_Indexes)
-# Count the number of Duplicates that will be deleted for Report
-Int_Dup_Rows = len(List_Row_Index_Duplicates)
-# Print feedback on Rows that are being deleted
-print('Deleting Duplicate Rows from:', filename)
-print(List_Row_Index_Duplicates)
-# Delete the rows that are duplicates from dataframe df_A
-df_A = df_A.drop(df_A.index[List_Row_Index_Duplicates])
-'''
+for index, row in df_B.iterrows():
+    Str_Row = str('')
+    for item in Lst_Columns:
+        Str_Row = Str_Row + row[item]
+    Lst_Row_Key_B.append(Str_Row)
+print('Example Row Key from B:', Lst_Row_Key_B[0])
+
+Lst_Bools = []
+for item in Lst_Row_Key_A:
+    if item in Lst_Row_Key_B:
+        Lst_Bools.append(False)
+    else:
+        Lst_Bools.append(True)
+Int_Duplicates = Lst_Bools.count(False)
+print('Duplicate Rows:', Int_Duplicates)
+
+# Create Array of Bools
+Array_Bools = np.array(Lst_Bools)
+
+# Remove Intersection
+df_Out = df_A[Array_Bools]
+
+# Create Output File
+df_Out.to_csv(path_or_buf=Output_path, sep=Delimiter, index=False)
