@@ -23,10 +23,14 @@ Extension = 'csv'
 # Csv files seperator for input and output files..generally (,) or (|)
 Delimiter = ','
 
-# Output file path of Result
+# Output file path of data with intersection Removed
 Output_path = 'D:/TEST/data_Output.csv'
 
-Lst_Columns = ['B','C']
+# Output file path of data Removed
+Output_path_Removed = 'D:/TEST/data_Output_Removed_Data.csv'
+
+# The names of the columns that you want to compare, if they are duplicates they will be removed
+Lst_Columns = ['YEAR','MONTH', 'DAY', 'TEST-KEY-CODE', 'SAMPLEPOINT']
 
 print('Directories loaded...')
 #endregion
@@ -72,5 +76,12 @@ Array_Bools = np.array(Lst_Bools)
 # Remove Intersection
 df_Out = df_A[Array_Bools]
 
-# Create Output File
+# Save Intersection as another datafile
+Array_Bools_filter_Intersection = np.invert(Array_Bools)
+df_Intersection = df_A[Array_Bools_filter_Intersection]
+
+# Create Output file for data with only intersection
+df_Intersection.to_csv(path_or_buf=Output_path_Removed, sep=Delimiter, index=False)
+
+# Create Output File for data with intersection removed
 df_Out.to_csv(path_or_buf=Output_path, sep=Delimiter, index=False)
